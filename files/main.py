@@ -10,6 +10,14 @@ cdriver = webdriver.Chrome('../chromedriver', options = opt)
 arglist = sys.argv
 arglen = len(arglist)
 
-def __main__():
-    #do main operations
+def print_usage():
+    print("")
     return
+
+
+def  main():
+    if arglen < 2:
+        print_usage()
+
+if __name__ == "__main__":
+    main()
