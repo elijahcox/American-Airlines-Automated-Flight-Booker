@@ -1,4 +1,3 @@
-#class file of locators for expidition of automation
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
@@ -8,5 +7,6 @@ class SW_locators:
         Arrival_Location = (By.ID, "destinationAirportCode")
         Departure_Date = (By.ID, "departureDate")
         Return_Date = (By.ID,"returnDate")
-        One_Way_Checkbox = ()
         Round_Trip_Checkbox = ()
+        One_Way_Checkbox = ()
+        Search_Button = (By.ID, "form-mixin--submit-button")
