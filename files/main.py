@@ -15,6 +15,7 @@ options.headless = False
 options.add_argument('--disable-blink-features=AutomationControlled')
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option('useAutomationExtension', False)
+
 cdriver = webdriver.Chrome('../chromedriver', options = options)
 cdriver.maximize_window()
 cdriver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36'})
@@ -67,8 +68,13 @@ if __name__ == "__main__":
     cdriver_wait.until(EC.element_to_be_clickable(SW_locators.Departure_Date))
     element = cdriver.find_element_by_id(SW_locators.Departure_Date[1])
     element.click()
-    element.send_keys(Keys.DELETE + dept_Date + Keys.ESCAPE)
-
+    sleep(1)
+    #need to switch iframe
+    element = cdriver.find_element_by_id("calendar-14-2021-" + dept_Date[0:2] + "-" + dept_Date[3:5]).click()
+    #element.send_keys(Keys.DELETE)
+    #type_slow(dept_Date,element)
+    element.send_keys(Keys.ESCAPE)
+    sleep(3)
     #4click search
     element = cdriver.find_element_by_id(SW_locators.Search_Button[1]).click()
     sleep(5)
