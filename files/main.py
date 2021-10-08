@@ -69,11 +69,10 @@ if __name__ == "__main__":
     element = cdriver.find_element_by_id(SW_locators.Departure_Date[1])
     element.click()
     sleep(1)
-    #need to switch iframe
-    element = cdriver.find_element_by_id("calendar-14-2021-" + dept_Date[0:2] + "-" + dept_Date[3:5]).click()
-    #element.send_keys(Keys.DELETE)
-    #type_slow(dept_Date,element)
-    element.send_keys(Keys.ESCAPE)
+
+    element.send_keys(Keys.DELETE)
+    type_slow(dept_Date,element)
+    element.send_keys(Keys.ENTER + Keys.ESCAPE)
     sleep(3)
     #4click search
     element = cdriver.find_element_by_id(SW_locators.Search_Button[1]).click()
