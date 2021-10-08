@@ -13,8 +13,12 @@ southwest_start_url = "https://www.southwest.com/air/booking/index.html?int=HOME
 options = Options()
 options.headless = False
 options.add_argument('--disable-blink-features=AutomationControlled')
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option('useAutomationExtension', False)
 cdriver = webdriver.Chrome('../chromedriver', options = options)
 cdriver.maximize_window()
+cdriver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36'})
+cdriver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 cdriver_wait = WebDriverWait(cdriver, 10)
 
 parser = argparse.ArgumentParser(description='This is a CL tool to automate the booking of flights through Southwest Airlines.')
@@ -24,13 +28,10 @@ parser.add_argument("DEPART_DATE", help = "Enter the departure date in the forma
 #parser.add_argument("ARRIVAL DATE", help = "Enter the three letter airport code for arrival location")
 args = parser.parse_args()
 
-
 def type_slow(to_enter,element):
     for i in range(0,len(to_enter)):
         element.send_keys(to_enter[i])
         sleep(.15)
-
-
 
 if __name__ == "__main__":
     #1. Parse CL input for commands
