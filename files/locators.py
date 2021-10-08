@@ -10,3 +10,4 @@ class SW_locators:
     One_Way_Checkbox = (By.XPATH, "//li[2]/label/input") #need better locator
     Search_Button = (By.ID, "form-mixin--submit-button")
     Passenger_Count = (By.ID, "adultPassengersCount")
+    Departure_Time = (By.ID, "departureTimeOfDay")
