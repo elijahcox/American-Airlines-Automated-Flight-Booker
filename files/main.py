@@ -17,7 +17,7 @@ parser.add_argument("DEPART_DATE", help = "Enter the departure date in the forma
 parser.add_argument("NUM_PASSENGERS", help = "Enter the number of adult passengers for this flight",type=int)
 parser.add_argument("TIME_OF_DAY", help = "Enter a number from 1-4 corresponding to the desired time of day. [1]-Anytime, [2]-Before Noon, [3]-Noon - 6PM, [4]-After 6PM" ,type=int)
 parser.add_argument("FLIGHT_TYPE", help = "Enter a single character corresponding to the ticket type: [B]-Business Select, [A]-Anytime, [W]-Wanna Get Away",type=str)
-parser.add_argument("MAX_PRICE", help = "Enter the ticket type: B-Business Select, A-Anytime, W-Wanna Get Away",type=int)
+parser.add_argument("MAX_PRICE", help = "Enter the maximum ticket price",type=int)
 args = parser.parse_args()
 
 options = Options()
