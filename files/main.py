@@ -58,11 +58,11 @@ if __name__ == "__main__":
         time_of_day = "After 6pm"
 
     if args.FLIGHT_TYPE == 'B':
-        flight_type = "Business Select"
+        flight_type = "1"
     elif args.FLIGHT_TYPE == 'A':
-        flight_type = "Anytime"
+        flight_type = "2"
     elif args.FLIGHT_TYPE == 'W':
-        flight_type = "Wanna Get Away"
+        flight_type = "3"
 
     #2. Sanitize inputs such as Depart and Arrival Code, ETC.
     assert(len(depart) == len(arrival) == 3)
@@ -111,13 +111,16 @@ if __name__ == "__main__":
     cdriver_wait.until(EC.element_to_be_clickable(SW_locators.Southwest_Logo))
 
     #GET tuple OF PRICES for each row VIA ID=BOOING-FARES-0-1, 0-2, etc
-    elements = cdriver.find_elements_by_id("air-booking-fares-0-1")
-    #print((elements[0]).text) prints 3 prices
-    '''
-    While selenium can find air-booking-fares-0-X/ [0-2]:(1-3)
-
-    //div[@id='air-booking-fares-0-1']/div[3]/button
-    '''
+    i = 1
+    min_price = max_price + 100
+    min_price_element = ''
+    builder = "air-booking-fares-0-" #builder += str(i)
+    elements = cdriver.find_elements_by_id(builder + str(i)) #get first row of prices
+    while len(elements) > 0:
+        element = elements[0].find_element_by_xpath("//div[@id=\"" + builder + str(i) + "\"]/div[" + flight_type + "]/button")
+        print(element.text)
+        i+=1
+        elements = cdriver.find_elements_by_id(builder + str(i))
     
     
     cdriver.close()
