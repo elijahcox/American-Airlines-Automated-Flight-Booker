@@ -45,7 +45,7 @@ if __name__ == "__main__":
     dept_Date = args.DEPART_DATE
     passengers = args.NUM_PASSENGERS
     time_of_day = ''
-    flight_type = args.FLIGHT_TYPE
+    flight_type = ''
     max_price = args.MAX_PRICE
 
     if args.TIME_OF_DAY == 1:
@@ -57,12 +57,19 @@ if __name__ == "__main__":
     elif args.TIME_OF_DAY == 4:
         time_of_day = "After 6pm"
 
+    if args.FLIGHT_TYPE == 'B':
+        flight_type = "Business Select"
+    elif args.FLIGHT_TYPE == 'A':
+        flight_type = "Anytime"
+    elif args.FLIGHT_TYPE == 'W':
+        flight_type = "Wanna Get Away"
+
     #2. Sanitize inputs such as Depart and Arrival Code, ETC.
     assert(len(depart) == len(arrival) == 3)
     assert(len(dept_Date) == 5) #cur_time = datetime.today().strftime('%m-%d') - TODO: implement departure date check, within 5 months of cur time
     assert(passengers >= 1 and passengers <= 8)
     assert(time_of_day != '')
-    assert(len(flight_type) == 1)
+    assert(flight_type != '')
     assert(max_price > 0)
 
     #3. Open the start url
@@ -98,8 +105,19 @@ if __name__ == "__main__":
 
     #4click search
     element = cdriver.find_element_by_id(SW_locators.Search_Button[1]).click()
-    sleep(5)
+    #sleep(5)
 
-    #GET tuple OF PRICES for each row VIA ID=BOOING-FARES-0-1, 0-2, etc 
+    #wait for page to load
+    cdriver_wait.until(EC.element_to_be_clickable(SW_locators.Southwest_Logo))
+
+    #GET tuple OF PRICES for each row VIA ID=BOOING-FARES-0-1, 0-2, etc
+    elements = cdriver.find_elements_by_id("air-booking-fares-0-1")
+    #print((elements[0]).text) prints 3 prices
+    '''
+    While selenium can find air-booking-fares-0-X/ [0-2]:(1-3)
+
+    //div[@id='air-booking-fares-0-1']/div[3]/button
+    '''
+    
     
     cdriver.close()

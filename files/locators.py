@@ -11,3 +11,4 @@ class SW_locators:
     Search_Button = (By.ID, "form-mixin--submit-button")
     Passenger_Count = (By.ID, "adultPassengersCount")
     Departure_Time = (By.ID, "departureTimeOfDay")
+    Southwest_Logo = (By.CSS_SELECTOR, ".header-booking--logo")
