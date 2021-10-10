@@ -14,7 +14,7 @@ parser.add_argument("ARRIVAL_IATA", help = "Enter the three letter airport code 
 parser.add_argument("DEPART_DATE", help = "Enter the departure date in the format MM/DD",type=str)
 parser.add_argument("NUM_PASSENGERS", help = "Enter the number of adult passengers for this flight",type=int)
 parser.add_argument("TIME_OF_DAY", help = "Enter a number from 1-4 corresponding to the desired time of day. [1]-Anytime, [2]-Before Noon, [3]-Noon - 6PM, [4]-After 6PM" ,type=int)
-parser.add_argument("FLIGHT_TYPE", help = "Enter a single character corresponding to the ticket type: [B]-Business Select, [A]-Anytime, [W]-Wanna Get Away",type=str)
+parser.add_argument("FLIGHT_TYPE", help = "Enter a single character corresponding to the ticket type: [1]-Business Select, [2]-Anytime, [3]-Wanna Get Away",type=int)
 parser.add_argument("MAX_PRICE", help = "Enter the maximum ticket price",type=int)
 args = parser.parse_args()
 options = Options()
@@ -29,7 +29,7 @@ cdriver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": 'Mozilla/5
 cdriver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 cdriver_wait = WebDriverWait(cdriver, 10)
 
-def type_slow(to_enter,element):
+def type_data(to_enter,element):
     for i in range(0,len(to_enter)):
         element.send_keys(to_enter[i])
         sleep_number = .10 + .01*random.randint(1,10)
@@ -43,7 +43,7 @@ def click_one_way():
 
 def enter_iata(locator, iata_to_enter):
     element = cdriver.find_element_by_id(locator)
-    type_slow(iata_to_enter,element)
+    type_data(iata_to_enter,element)
     cdriver.find_element_by_xpath("//button[contains(.,\"" + iata_to_enter + "\")]").click()
 
 def enter_time_of_day():
@@ -52,13 +52,13 @@ def enter_time_of_day():
 
 def enter_passengers():
     cdriver.find_element_by_id(SW_locators.Passenger_Count[1]).click()
-    cdriver.find_element_by_xpath("//button[contains(.,\"" + str(passengers) + "\")]").click()
+    cdriver.find_element_by_xpath("//button[contains(.,\"" + str(args.NUM_PASSENGERS) + "\")]").click()
 
 def enter_departure():
     element = cdriver.find_element_by_id(SW_locators.Departure_Date[1])#enter depart date
     element.click()
     element.send_keys(Keys.DELETE)
-    type_slow(dept_Date,element)
+    type_data(args.DEPART_DATE,element)
 
 def get_lowest_price(cdriver,max_price,flight_type):#returns a webdriver element pointing to the lowest price ticket
     i = 1
@@ -69,21 +69,16 @@ def get_lowest_price(cdriver,max_price,flight_type):#returns a webdriver element
     while len(elements) > 0:
         element = elements[0].find_element_by_xpath("//div[@id=\"" + builder + str(i) + "\"]/div[" + flight_type + "]/button")
         if element.text[0] == '$':
-            if int(element.text[1:]) < min_price:
+            cur_price = int(element.text[1:])
+            if  cur_price < min_price:
+                min_price = cur_price
                 min_price_element = element
         i+=1
         elements = cdriver.find_elements_by_id(builder + str(i))
     return min_price_element
 
 if __name__ == "__main__":
-    depart = args.DEPART_IATA #Parse CL input for commands
-    arrival = args.ARRIVAL_IATA
-    dept_Date = args.DEPART_DATE
-    passengers = args.NUM_PASSENGERS
     time_of_day = ''
-    flight_type = ''
-    max_price = args.MAX_PRICE
-
     if args.TIME_OF_DAY == 1:
         time_of_day = "All day"
     elif args.TIME_OF_DAY == 2:
@@ -93,32 +88,24 @@ if __name__ == "__main__":
     elif args.TIME_OF_DAY == 4:
         time_of_day = "After 6pm"
 
-    if args.FLIGHT_TYPE == 'B':
-        flight_type = "1"
-    elif args.FLIGHT_TYPE == 'A':
-        flight_type = "2"
-    elif args.FLIGHT_TYPE == 'W':
-        flight_type = "3"
-
-    assert(len(depart) == len(arrival) == 3) #Sanitize inputs such as Depart and Arrival Code, ETC.
-    assert(len(dept_Date) == 5)
-    assert(passengers >= 1 and passengers <= 8)
+    assert(len(args.DEPART_IATA) == len(args.ARRIVAL_IATA) == 3) #Sanitize inputs such as Depart and Arrival Code, ETC.
+    assert(len(args.DEPART_DATE) == 5)
+    assert(args.NUM_PASSENGERS >= 1 and args.NUM_PASSENGERS <= 8)
     assert(time_of_day != '')
-    assert(flight_type != '')
-    assert(max_price > 0)
+    assert(args.FLIGHT_TYPE >= 1 and args.FLIGHT_TYPE <= 3)
+    assert(args.MAX_PRICE > 0)
     
     cdriver.get(southwest_start_url)#Open the start url
     load_element(SW_locators.One_Way_Checkbox)#wait for search bar to load
     click_one_way() #click one way option
-    enter_iata(SW_locators.Departure_Location[1],depart) #enter depart airport code
-    enter_iata(SW_locators.Arrival_Location[1],arrival)#enter arrival airport code
+    enter_iata(SW_locators.Departure_Location[1],args.DEPART_IATA) #enter depart airport code
+    enter_iata(SW_locators.Arrival_Location[1],args.ARRIVAL_IATA)#enter arrival airport code
     enter_time_of_day() #enter time of day
     enter_passengers() #enter number of passengers
     enter_departure() #enter departure date
     cdriver.find_element_by_id(SW_locators.Search_Button[1]).click()#click search
     load_element(SW_locators.Southwest_Logo)#wait for page to load
-
-    min_price_element = get_lowest_price(cdriver,max_price,flight_type)
+    min_price_element = get_lowest_price(cdriver,args.MAX_PRICE,flight_type)
     try:
         min_price_element.location_once_scrolled_into_view
         min_price_element.click()
