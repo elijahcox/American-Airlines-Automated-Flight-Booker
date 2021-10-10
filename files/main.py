@@ -60,14 +60,14 @@ def enter_departure():
     element.send_keys(Keys.DELETE)
     type_data(args.DEPART_DATE,element)
 
-def get_lowest_price(cdriver,max_price,flight_type):#returns a webdriver element pointing to the lowest price ticket
+def get_lowest_price():#returns a webdriver element pointing to the lowest price ticket
     i = 1
-    min_price = max_price + 1
+    min_price = args.MAX_PRICE + 1
     min_price_element = ''
     builder = "air-booking-fares-0-" #builder += str(i)
     elements = cdriver.find_elements_by_id(builder + str(i)) #get first row of prices
     while len(elements) > 0:
-        element = elements[0].find_element_by_xpath("//div[@id=\"" + builder + str(i) + "\"]/div[" + flight_type + "]/button")
+        element = elements[0].find_element_by_xpath("//div[@id=\"" + builder + str(i) + "\"]/div[" + str(args.FLIGHT_TYPE) + "]/button")
         if element.text[0] == '$':
             cur_price = int(element.text[1:])
             if  cur_price < min_price:
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     enter_departure() #enter departure date
     cdriver.find_element_by_id(SW_locators.Search_Button[1]).click()#click search
     load_element(SW_locators.Southwest_Logo)#wait for page to load
-    min_price_element = get_lowest_price(cdriver,args.MAX_PRICE,flight_type)
+    min_price_element = get_lowest_price()
     try:
         min_price_element.location_once_scrolled_into_view
         min_price_element.click()
