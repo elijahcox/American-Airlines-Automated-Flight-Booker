@@ -12,3 +12,5 @@ class SW_locators:
     Passenger_Count = (By.ID, "adultPassengersCount")
     Departure_Time = (By.ID, "departureTimeOfDay")
     Southwest_Logo = (By.CSS_SELECTOR, ".header-booking--logo")
+    Book_Flight_Button = (By.ID, "air-booking-product-1")
+    Continue_Button = (By.XPATH, "//button[contains(.,'Continue')]")

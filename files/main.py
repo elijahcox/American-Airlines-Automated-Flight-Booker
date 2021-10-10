@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 import sys, argparse, random
 from time import sleep
 from datetime import datetime
@@ -38,8 +39,24 @@ def type_slow(to_enter,element):
         sleep_number = .10 + .01*random.randint(1,10)
         sleep(sleep_number)
 
+def get_lowest_price(cdriver,max_price):
+    i = 1
+    min_price = max_price + 1
+    min_price_element = ''
+    builder = "air-booking-fares-0-" #builder += str(i)
+    elements = cdriver.find_elements_by_id(builder + str(i)) #get first row of prices
+    while len(elements) > 0:
+        element = elements[0].find_element_by_xpath("//div[@id=\"" + builder + str(i) + "\"]/div[" + flight_type + "]/button")
+        if element.text[0] == '$':
+            if int(element.text[1:]) < min_price:
+                min_price_element = element
+        i+=1
+        elements = cdriver.find_elements_by_id(builder + str(i))
+    return min_price_element
+
+
 if __name__ == "__main__":
-    #1. Parse CL input for commands
+    #Parse CL input for commands
     depart = args.DEPART_IATA
     arrival = args.ARRIVAL_IATA
     dept_Date = args.DEPART_DATE
@@ -64,7 +81,7 @@ if __name__ == "__main__":
     elif args.FLIGHT_TYPE == 'W':
         flight_type = "3"
 
-    #2. Sanitize inputs such as Depart and Arrival Code, ETC.
+    #Sanitize inputs such as Depart and Arrival Code, ETC.
     assert(len(depart) == len(arrival) == 3)
     assert(len(dept_Date) == 5) #cur_time = datetime.today().strftime('%m-%d') - TODO: implement departure date check, within 5 months of cur time
     assert(passengers >= 1 and passengers <= 8)
@@ -72,7 +89,7 @@ if __name__ == "__main__":
     assert(flight_type != '')
     assert(max_price > 0)
 
-    #3. Open the start url
+    #Open the start url
     cdriver.get(southwest_start_url)
 
     #click one way
@@ -103,24 +120,29 @@ if __name__ == "__main__":
     cdriver.find_element_by_id(SW_locators.Passenger_Count[1]).click()
     cdriver.find_element_by_xpath("//button[contains(.,\"" + str(passengers) + "\")]").click()
 
-    #4click search
+    #click search
     element = cdriver.find_element_by_id(SW_locators.Search_Button[1]).click()
-    #sleep(5)
 
     #wait for page to load
     cdriver_wait.until(EC.element_to_be_clickable(SW_locators.Southwest_Logo))
 
     #GET tuple OF PRICES for each row VIA ID=BOOING-FARES-0-1, 0-2, etc
-    i = 1
-    min_price = max_price + 100
-    min_price_element = ''
-    builder = "air-booking-fares-0-" #builder += str(i)
-    elements = cdriver.find_elements_by_id(builder + str(i)) #get first row of prices
-    while len(elements) > 0:
-        element = elements[0].find_element_by_xpath("//div[@id=\"" + builder + str(i) + "\"]/div[" + flight_type + "]/button")
-        print(element.text)
-        i+=1
-        elements = cdriver.find_elements_by_id(builder + str(i))
-    
+    min_price_element = get_lowest_price(cdriver,max_price)
+    try:
+        min_price_element.location_once_scrolled_into_view
+    except AttributeError:
+        print("Could not find a ticket for the specified price")
+        cdriver.close()
+
+    min_price_element.click()
+    cdriver_wait.until(EC.element_to_be_clickable(SW_locators.Book_Flight_Button))
+    cdriver.find_element_by_id(SW_locators.Book_Flight_Button[1]).click()
+    sleep(2)
+    cdriver_wait.until(EC.element_to_be_clickable(SW_locators.Southwest_Logo))
+    cont = cdriver.find_element_by_xpath(SW_locators.Continue_Button[1])
+    cont.location_once_scrolled_into_view
+    cont.click()
+    sleep(3)
+
     
     cdriver.close()
