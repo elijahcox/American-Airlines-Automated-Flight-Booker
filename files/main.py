@@ -64,12 +64,18 @@ def get_lowest_price():#returns a webdriver element pointing to the lowest price
     i = 1
     min_price = args.MAX_PRICE + 1
     min_price_element = ''
+    cur_price = ''
     builder = "air-booking-fares-0-" #builder += str(i)
     elements = cdriver.find_elements_by_id(builder + str(i)) #get first row of prices
     while len(elements) > 0:
         element = elements[0].find_element_by_xpath("//div[@id=\"" + builder + str(i) + "\"]/div[" + str(args.FLIGHT_TYPE) + "]/button")
         if element.text[0] == '$':
-            cur_price = int(element.text[1:])
+            err_check = element.text.find('\n')
+            if err_check != -1: #check for n left
+                cur_price = int(element.text[1:err_check])
+            else:
+                cur_price = int(element.text[1:])
+                
             if  cur_price < min_price:
                 min_price = cur_price
                 min_price_element = element
