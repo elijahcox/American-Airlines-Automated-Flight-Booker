@@ -15,6 +15,7 @@ If no flight meeting the maximum desired price is found, the page is left open f
 In the future, this could be automated to a much further extent. I plan on taking text files containing address information as well as payment info through paypal (handling raw card data seems problematic).
 
 Usage -- positional arguments:
+
   DEPART_IATA     Enter the three letter airport code for departure location
   
   ARRIVAL_IATA    Enter the three letter airport code for arrival location
