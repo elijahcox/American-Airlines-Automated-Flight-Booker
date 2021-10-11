@@ -16,12 +16,18 @@ In the future, this could be automated to a much further extent. I plan on takin
 
 Usage -- positional arguments:
   DEPART_IATA     Enter the three letter airport code for departure location
+  
   ARRIVAL_IATA    Enter the three letter airport code for arrival location
+  
   DEPART_DATE     Enter the departure date in the format MM/DD
+  
   NUM_PASSENGERS  Enter the number of adult passengers for this flight
+  
   TIME_OF_DAY     Enter a number from 1-4 corresponding to the desired time of
                   day. [1]-Anytime, [2]-Before Noon, [3]-Noon - 6PM, [4]-After
                   6PM
+                  
   FLIGHT_TYPE     Enter a single character corresponding to the ticket type:
                   [1]-Business Select, [2]-Anytime, [3]-Wanna Get Away
+                  
   MAX_PRICE       Enter the maximum ticket price
